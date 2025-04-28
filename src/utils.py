@@ -69,7 +69,7 @@ def read_dataset(name, frac=None):
         end = 2013
         
     elif name == 'amazon-toys':
-        data = pd.read_table(r"..\Datasets\Amazon\ratings_Toys_and_Games.csv",
+        data = pd.read_table(r"/Users/fionanlend/ML_Lab/time-recsys/Datasets/Amazon/ratings_Toys_and_Games.csv",
                      sep=',', header = 0, names=['user', 'item', 'rating', 'timestamp'], engine='python') 
         data['user'] = data.groupby(['user']).ngroup()
         data['item'] = data.groupby(['item']).ngroup()
