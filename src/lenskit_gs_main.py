@@ -136,7 +136,7 @@ def main(dataset):
             rla.add_metric(topn.recall, k=10)
             results = rla.compute(all_recs, tp.test)
             results = results.groupby('Algorithm').mean()
-            all_results = all_results.append(results)
+            all_results = all_results._append(results)
 
     all_results.to_csv(r"..\Results\{dataset}_result_10.csv".format(dataset=dataset))
     
