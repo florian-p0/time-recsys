@@ -1,133 +1,108 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun 17 17:17:14 2021
-
-@author: tsche
+Created on Sat Mai 10 2025
+Modified in May 2025:
+- Replaced pd.read_table with pd.read_csv
+- Added Pathlib for cross-platform paths
+- Added error handling for timestamp conversion
+@author: Fiona Nlend
 """
+
 import pandas as pd
+from pathlib import Path
 
 def get_grid(name, metric):
-    if metric == 'ndcg':
-        grids = pd.read_excel('Grids.xls')
-    elif metric == 'rmse':
-        grids = pd.read_excel('Grids_rmse.xls')
+    grid_file = 'Grids.xls' if metric == 'ndcg' else 'Grids_rmse.xls'
+    grids = pd.read_excel(grid_file)
     grids = grids.set_index('Algo')
-    
     grid = grids[name]
-
     return grid
 
 def read_dataset(name, frac=None):
+    """ loading of different pre-downloaded datasets with optional sampling"""
     
-    """ loading of different pre-downloaded datasets"""
-    
+    base_path = Path("..") / "Datasets"
+
     if name == 'ML-100k':
-        data = pd.read_table(r"..\Datasets\Movielens\ml-100k\u.data", 
-                             sep='\t', header = 0, names=['user', 'item', 'rating', 'timestamp'], engine='python')
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 1995
-        end = 1998
-        
+        path = base_path / "Movielens/ml-100k/u.data"
+        data = pd.read_csv(path, sep='\t', names=['user', 'item', 'rating', 'timestamp'], header=None)
+        start, end = 1995, 1998
+
     elif name == 'ML-1M':
-        data = pd.read_table(r"..\Datasets\Movielens\ml-1m\ratings.dat", 
-                             sep='::', header = 0, names=['user', 'item', 'rating', 'timestamp'], engine='python')
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 2000
-        end = 2003
-                
+        path = base_path / "Movielens/ml-1m/ratings.dat"
+        data = pd.read_csv(path, sep='::', engine='python', names=['user', 'item', 'rating', 'timestamp'], header=None)
+        start, end = 2000, 2003
+
     elif name == 'ML-10M':
-        data = pd.read_table(r"..\Datasets\Movielens\ml-10M100K\ratings.dat", 
-                             sep='::', header = 0, names=['user', 'item', 'rating', 'timestamp'], engine='python')
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 1996
-        end = 2009
-        
-        
+        path = base_path / "Movielens/ml-10M100K/ratings.dat"
+        data = pd.read_csv(path, sep='::', engine='python', names=['user', 'item', 'rating', 'timestamp'], header=None)
+        start, end = 1996, 2009
+
     elif name == 'ML-100k-latest':
-        data = pd.read_table(r"..\Datasets\Movielens\ml-latest-small\ratings.csv", 
-                             sep='::', header = 0, names=['user', 'item', 'rating', 'timestamp'], engine='python')
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 1995
-        end = 2017
-               
+        path = base_path / "Movielens/ml-latest-small/ratings.csv"
+        data = pd.read_csv(path, sep=',', names=['user', 'item', 'rating', 'timestamp'], header=0)
+        start, end = 1995, 2017
+
     elif name == 'amazon-instantvideo':
-        data = pd.read_table(r"..\Datasets\Amazon\ratings_Amazon_Instant_Video.csv",
-                     sep=',', header = 0, names=['user', 'item', 'rating', 'timestamp'], engine='python') 
-        data['user'] = data.groupby(['user']).ngroup()
-        data['item'] = data.groupby(['item']).ngroup()
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 2007
-        end = 2014
-        
+        path = base_path / "Amazon/ratings_Amazon_Instant_Video.csv"
+        data = pd.read_csv(path, names=['user', 'item', 'rating', 'timestamp'], header=0)
+        start, end = 2007, 2014
+
     elif name == 'amazon-books':
-        data = pd.read_table(r"..\Datasets\Amazon\ratings_Books.csv",
-                     sep=',', header = 0, names=['user', 'item', 'rating', 'timestamp'], engine='python') 
-        data['user'] = data.groupby(['user']).ngroup()
-        data['item'] = data.groupby(['item']).ngroup()
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 1997
-        end = 2013
-        
+        path = base_path / "Amazon/ratings_Books.csv"
+        data = pd.read_csv(path, names=['user', 'item', 'rating', 'timestamp'], header=0)
+        start, end = 1997, 2013
+
     elif name == 'amazon-toys':
-        data = pd.read_table(r"..\Datasets\Amazon\ratings_Toys_and_Games.csv",
-                     sep=',', header = 0, names=['user', 'item', 'rating', 'timestamp'], engine='python') 
-        data['user'] = data.groupby(['user']).ngroup()
-        data['item'] = data.groupby(['item']).ngroup()
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 2001
-        end = 2014
-    
+        path = base_path / "Amazon/ratings_Toys_and_Games.csv"
+        data = pd.read_csv(path, names=['user', 'item', 'rating', 'timestamp'], header=0)
+        start, end = 2001, 2014
+
     elif name == 'amazon-electronics':
-        data = pd.read_table(r"..\Datasets\Amazon\ratings_Electronics.csv",
-                     sep=',', header = 0, names=['user', 'item', 'rating', 'timestamp'], engine='python') 
-        data['user'] = data.groupby(['user']).ngroup()
-        data['item'] = data.groupby(['item']).ngroup()
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 2000
-        end = 2014
-            
+        path = base_path / "Amazon/ratings_Electronics.csv"
+        data = pd.read_csv(path, names=['user', 'item', 'rating', 'timestamp'], header=0)
+        start, end = 2000, 2014
+
     elif name == 'amazon-music':
-        data = pd.read_table(r"..\Datasets\Amazon\ratings_Digital_Music.csv",
-                     sep=',', header = 0, names=['item', 'user', 'rating', 'timestamp'], engine='python') 
+        path = base_path / "Amazon/ratings_Digital_Music.csv"
+        data = pd.read_csv(path, names=['item', 'user', 'rating', 'timestamp'], header=0)
         data = data[['user', 'item', 'rating', 'timestamp']]
-        data['user'] = data.groupby(['user']).ngroup()
-        data['item'] = data.groupby(['item']).ngroup()
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 1998
-        end = 2014
-        
+        start, end = 1998, 2014
+
     elif name == 'netflix':
-        data = pd.read_table(r"..\Datasets\netflix\NetflixRatings.csv", sep=",", names = ['item','user', 'rating', 'timestamp'])
+        path = base_path / "netflix/NetflixRatings.csv"
+        data = pd.read_csv(path, names=['item', 'user', 'rating', 'timestamp'], header=None)
         data = data[['user', 'item', 'rating', 'timestamp']]
-        data.timestamp = pd.to_datetime(data.timestamp)
-        start = 1998
-        end = 2005
-        
+        start, end = 1998, 2005
+
     elif name == 'yelp':
-        data = pd.read_json(r"..\Datasets\yelp_training_set\yelp_training_set_review.json", lines=True)
+        path = base_path / "yelp_training_set/yelp_training_set_review.json"
+        data = pd.read_json(path, lines=True)
         data = data.rename(columns={"user_id": "user", "business_id": "item", "stars": "rating", "date": "timestamp"})
         data = data[['user', 'item', 'rating', 'timestamp']]
-        data.timestamp = pd.to_datetime(data.timestamp)
-        data['user'] = data.groupby(['user']).ngroup()
-        data['item'] = data.groupby(['item']).ngroup()
-        start = 2006
-        end = 2013
-                
+        start, end = 2006, 2013
+
     elif name == 'epinions':
-        data = pd.read_table(r"..\Datasets\epinions\rating_with_timestamp.txt", 
-                             delim_whitespace=True, names = ['user','item','category','rating','helpfulness', 'timestamp'])
+        path = base_path / "epinions/rating_with_timestamp.txt"
+        data = pd.read_csv(path, delim_whitespace=True,
+                           names=['user', 'item', 'category', 'rating', 'helpfulness', 'timestamp'])
         data = data[['user', 'item', 'rating', 'timestamp']]
-        data.timestamp = pd.to_datetime(data.timestamp, unit='s', origin='1970-01-01')
-        start = 1999
-        end = 2011
-               
+        start, end = 1999, 2011
+
     else:
         raise ValueError('Dataset not implemented')
-    
+
+    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='s', origin='1970-01-01', errors='coerce')
+
+    # User- und Item-IDs neu codieren (0-basiert, int)
+    if 'user' in data.columns and data['user'].dtype == 'object':
+        data['user'] = data['user'].astype('category').cat.codes
+    if 'item' in data.columns and data['item'].dtype == 'object':
+        data['item'] = data['item'].astype('category').cat.codes
+
     data = data.groupby("user").filter(lambda grp: len(grp) > 2)
 
-    if frac is not None:    
-        data = data.sample(frac = frac)
-    
-    return data, start, end
+    if frac is not None:
+        data = data.sample(frac=frac, random_state=42)
 
+    return data, start, end
