@@ -55,7 +55,7 @@ def final_plot(results, metric, algos, start, end, steps, dataset):
     plt.show()
 
 def main_rmse(dataset):
-    names = ['Bias','II','UU','BiasedMF','SVD']
+    names = ['HPF','Bias','II','UU','BiasedMF','SVD']
     data, start, end = read_dataset(dataset)
     grid = get_grid(dataset, 'rmse')
     if dataset == 'ML-100k':
@@ -99,7 +99,7 @@ def main_rmse(dataset):
     return all_results_pred 
 
 def main(dataset):
-    names = ['Bias','II','UU','BiasedMF','SVD','Pop']
+    names = ['HPF','Bias','II','UU','BiasedMF','SVD','Pop']
     data, start, end = read_dataset(dataset)
     grid = get_grid(dataset, 'rmse')
     if dataset == 'ML-100k':
@@ -144,3 +144,6 @@ def main(dataset):
     final_plot(all_results,'ndcg', names, start, end, i,dataset)
 
     return all_results
+
+if __name__ == "__main__":
+    main("amazon-toys")
