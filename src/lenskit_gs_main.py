@@ -144,6 +144,3 @@ def main(dataset):
     final_plot(all_results,'ndcg', names, start, end, i,dataset)
 
     return all_results
-
-if __name__ == "__main__":
-    main("amazon-toys")
