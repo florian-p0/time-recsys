@@ -89,10 +89,24 @@ def read_dataset(name, frac=None):
         data = data[['user', 'item', 'rating', 'timestamp']]
         start, end = 1999, 2011
 
+    elif name == 'amazon-video-games':
+        path = base_path / "Amazon/Video_Games.csv"
+        data = pd.read_csv(path, names=['user', 'item', 'rating', 'timestamp'], header=0)
+        start, end = 1998, 2024
+
+    elif name == 'amazon-software':
+        path = base_path / "Amazon/Software.csv"
+        data = pd.read_csv(path, names=['user', 'item', 'rating', 'timestamp'], header=0)
+        start, end = 1999, 2024
+
     else:
         raise ValueError('Dataset not implemented')
 
-    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='s', origin='1970-01-01', errors='coerce')
+    if name == 'amazon-software' or name == 'amazon-video-games':
+        # For amazon-software, we need to handle the timestamp differently
+        data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms', origin='unix', errors='coerce')
+    else:
+        data['timestamp'] = pd.to_datetime(data['timestamp'], unit='s', origin='1970-01-01', errors='coerce')
 
     # User- und Item-IDs neu codieren (0-basiert, int)
     if 'user' in data.columns and data['user'].dtype == 'object':
@@ -106,3 +120,5 @@ def read_dataset(name, frac=None):
         data = data.sample(frac=frac, random_state=42)
 
     return data, start, end
+
+#dataset = read_dataset('amazon-video-games')  # Example usage to test the function
