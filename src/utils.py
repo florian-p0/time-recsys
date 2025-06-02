@@ -99,12 +99,19 @@ def read_dataset(name, frac=None):
         data = pd.read_csv(path, names=['user', 'item', 'rating', 'timestamp'], header=0)
         start, end = 1999, 2024
 
+    elif name == 'food-com':
+        path = base_path / "food.com/RAW_interactions.csv"
+        data = pd.read_csv(path, names=['user', 'item', 'timestamp', 'rating', 'review'], header=0)
+        start, end = 2000, 2019
+
     else:
         raise ValueError('Dataset not implemented')
 
     if name == 'amazon-software' or name == 'amazon-video-games':
-        # For amazon-software, we need to handle the timestamp differently
+        # For amazon-software, we need to handle the timestamps differently as they are in milliseconds
         data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms', origin='unix', errors='coerce')
+    elif name == 'food-com':
+        data['timestamp'] = pd.to_datetime(data['timestamp'])
     else:
         data['timestamp'] = pd.to_datetime(data['timestamp'], unit='s', origin='1970-01-01', errors='coerce')
 
@@ -120,5 +127,3 @@ def read_dataset(name, frac=None):
         data = data.sample(frac=frac, random_state=42)
 
     return data, start, end
-
-#dataset = read_dataset('amazon-video-games')  # Example usage to test the function

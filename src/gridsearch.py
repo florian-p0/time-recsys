@@ -51,7 +51,7 @@ def gs(name, parameters, data):
         all_recs = []
         test_data = []
         version = str(para)
-        for train, test in partition_users(data, 3, SampleFrac(0.2)): # RNG seed not set, so different results each time
+        for train, test in partition_users(data, 3, SampleFrac(0.2), rng_spec=42):
             test_data.append(test)
             recs, preds = evaluate(version, algo, train, test)
             all_recs.append(recs)
@@ -92,7 +92,7 @@ def gs_rmse(name, parameters, data):
         #print('Testing' + str(para))
         all_preds = []
         version = str(para)
-        for train, test in partition_users(data, 5, SampleFrac(0.2)): # RNG seed not set, so different results each time
+        for train, test in partition_users(data, 5, SampleFrac(0.2), rng_spec=42):
             recs, preds = evaluate(version, algo, train, test)
             all_preds.append(preds)
         all_preds = pd.concat(all_preds, ignore_index=True)

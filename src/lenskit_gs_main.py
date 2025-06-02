@@ -72,7 +72,7 @@ def main_rmse(dataset):
         if new_df.shape[0] > 80000: 
             i += 1
             print('set ', i)
-            tp, tp2 = partition_users(new_df, 2, method=LastFrac(0.2, col='timestamp')) # RNG seed not set, so different results each time
+            tp, tp2 = partition_users(new_df, 2, method=LastFrac(0.2, col='timestamp'), rng_spec=42) # RNG seed not set, so different results each time
             for name in names: 
                 if name == 'Pop':
                     best_para = 0
@@ -98,16 +98,16 @@ def main_rmse(dataset):
     
     return all_results_pred 
 
-def main(dataset):
+def main(dataset, frac=None):
     names = ['HPF','Bias','II','UU','BiasedMF','SVD','Pop']
-    data, start, end = read_dataset(dataset)
+    data, start, end = read_dataset(dataset, frac=frac)
     grid = get_grid(dataset, 'rmse')
     if dataset == 'ML-100k':
         g = data.groupby(pd.Grouper(key='timestamp', freq='M'))
-    elif dataset == 'amazon-video-games':
-        g = data.groupby(pd.Grouper(key='timestamp', freq='3Y3M'))
-    elif dataset == 'amazon-software':
+    elif dataset == 'amazon-video-games' or dataset == 'amazon-software':
         g = data.groupby(pd.Grouper(key='timestamp', freq='5Y'))
+    elif dataset == 'food-com':
+        g = data.groupby(pd.Grouper(key='timestamp', freq='3Y'))
     else: 
         g = data.groupby(pd.Grouper(key='timestamp', freq='Y'))
     splits = [group for _,group in g]
@@ -121,7 +121,7 @@ def main(dataset):
         if new_df.shape[0] > 500: 
             i += 1
             print('set', i)
-            tp, tp2 = partition_users(new_df, 2, method=LastFrac(0.2, col='timestamp')) # RNG seed not set, so different results each time
+            tp, tp2 = partition_users(new_df, 2, method=LastFrac(0.2, col='timestamp'), rng_spec=42)
             for name in names: 
                 if name == 'Pop':
                     best_para = 0
