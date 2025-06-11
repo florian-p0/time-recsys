@@ -18,7 +18,7 @@ from lenskit.crossfold import partition_users, LastFrac
 from utils import read_dataset, get_grid
 from gridsearch import gs, gs_rmse, get_algo  
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 def evaluate_pred(name, algo, train, test):
@@ -54,9 +54,9 @@ def final_plot(results, metric, algos, start, end, steps, dataset):
     plt.savefig(r"../Figures/{}_{}_10.png".format(dataset, metric))
     plt.show()
 
-def main_rmse(dataset):
+def main_rmse(dataset, frac=None, rs=42):
     names = ['HPF','Bias','II','UU','BiasedMF','SVD']
-    data, start, end = read_dataset(dataset)
+    data, start, end = read_dataset(dataset, frac=frac)
     grid = get_grid(dataset, 'rmse')
     if dataset == 'ML-100k':
         g = data.groupby(pd.Grouper(key='timestamp', freq='M'))
@@ -72,13 +72,13 @@ def main_rmse(dataset):
         if new_df.shape[0] > 80000: 
             i += 1
             print('set ', i)
-            tp, tp2 = partition_users(new_df, 2, method=LastFrac(0.2, col='timestamp'), rng_spec=42) # RNG seed not set, so different results each time
+            tp, tp2 = partition_users(new_df, 2, method=LastFrac(0.2, col='timestamp'), rng_spec=rs) # RNG seed not set, so different results each time
             for name in names: 
                 if name == 'Pop':
                     best_para = 0
                 else:
                     grid_algo = [int(s) for s in grid[name].split(',')]
-                    best_para, _ = gs_rmse(name, grid_algo, tp.train)
+                    best_para, _ = gs_rmse(name, grid_algo, tp.train, rs=rs)
                 print(name + str(best_para))
                 algo = get_algo(name, best_para)
                 preds = evaluate_pred(name, algo, tp.train, tp.test)
@@ -98,7 +98,7 @@ def main_rmse(dataset):
     
     return all_results_pred 
 
-def main(dataset, frac=None):
+def main(dataset, frac=None, rs=42):
     names = ['HPF','Bias','II','UU','BiasedMF','SVD','Pop']
     data, start, end = read_dataset(dataset, frac=frac)
     grid = get_grid(dataset, 'rmse')
@@ -121,15 +121,15 @@ def main(dataset, frac=None):
         if new_df.shape[0] > 500: 
             i += 1
             print('set', i)
-            tp, tp2 = partition_users(new_df, 2, method=LastFrac(0.2, col='timestamp'), rng_spec=42)
+            tp, tp2 = partition_users(new_df, 2, method=LastFrac(0.2, col='timestamp'), rng_spec=rs)
             for name in names: 
                 if name == 'Pop':
                     best_para = 0
                 else:
                     grid_algo = [int(s) for s in grid[name].split(',')]
-                    best_para, _ = gs(name, grid_algo, tp.train)
+                    best_para, _ = gs(name, grid_algo, tp.train, rs=rs)
                 print(name, str(best_para))
-                algo = get_algo(name, best_para)
+                algo = get_algo(name, best_para, rs=rs)
                 recs = evaluate_rec(name, algo, tp.train, tp.test)
                 all_recs.append(recs)
                 

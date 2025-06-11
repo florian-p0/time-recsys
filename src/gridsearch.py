@@ -26,7 +26,7 @@ def evaluate(aname, algo, train, test):
     return recs, preds
 
 
-def gs(name, parameters, data):
+def gs(name, parameters, data, rs):
     results = []
     if name == 'Pop':
         algo = basic.Popular()
@@ -40,18 +40,18 @@ def gs(name, parameters, data):
         elif name == 'Bias':
             algo = basic.Bias(damping=para)
         elif name == 'BiasedMF':
-            algo = als.BiasedMF(para)
+            algo = als.BiasedMF(para, rng_spec=rs)
         elif name == 'SVD':
-            algo = funksvd.FunkSVD(para)
+            algo = funksvd.FunkSVD(para, random_state=rs)
         elif name == 'BPR':
-            algo = tf.BPR(para)
+            algo = tf.BPR(para, rng_spec=rs)
         elif name == 'HPF':
-            algo = hpf.HPF(para)
+            algo = hpf.HPF(para, kwargs={'random_seed': rs})
         #print('Testing' + str(para))
         all_recs = []
         test_data = []
         version = str(para)
-        for train, test in partition_users(data, 3, SampleFrac(0.2), rng_spec=42):
+        for train, test in partition_users(data, 3, SampleFrac(0.2, rng_spec=rs), rng_spec=rs):
             test_data.append(test)
             recs, preds = evaluate(version, algo, train, test)
             all_recs.append(recs)
@@ -68,7 +68,7 @@ def gs(name, parameters, data):
     best_para = int(idx)
     return best_para, results        
 
-def gs_rmse(name, parameters, data):
+def gs_rmse(name, parameters, data, rs):
     results = [10]
     if name == 'Pop':
         algo = basic.Popular()
@@ -82,17 +82,17 @@ def gs_rmse(name, parameters, data):
         elif name == 'Bias':
             algo = basic.Bias(damping=para)
         elif name == 'BiasedMF':
-            algo = als.BiasedMF(para)
+            algo = als.BiasedMF(para, rng_spec=rs)
         elif name == 'SVD':
-            algo = funksvd.FunkSVD(para)
+            algo = funksvd.FunkSVD(para, random_state=rs)
         elif name == 'BPR':
-            algo = tf.BPR(para)
+            algo = tf.BPR(para, rng_spec=rs)
         elif name == 'HPF':
-            algo = hpf.HPF(para)
+            algo = hpf.HPF(para, kwargs={'random_seed': rs})
         #print('Testing' + str(para))
         all_preds = []
         version = str(para)
-        for train, test in partition_users(data, 5, SampleFrac(0.2), rng_spec=42):
+        for train, test in partition_users(data, 5, SampleFrac(0.2, rng_spec=rs), rng_spec=rs):
             recs, preds = evaluate(version, algo, train, test)
             all_preds.append(preds)
         all_preds = pd.concat(all_preds, ignore_index=True)
@@ -104,7 +104,7 @@ def gs_rmse(name, parameters, data):
     return best_para, results  
 
 
-def get_algo(name, para):
+def get_algo(name, para, rs=None):
     if name == 'II':
         algo = item_knn.ItemItem(para)
     elif name == 'UU':
@@ -112,13 +112,13 @@ def get_algo(name, para):
     elif name == 'Bias':
         algo = basic.Bias(damping=para)
     elif name == 'BiasedMF':
-        algo = als.BiasedMF(para)
+        algo = als.BiasedMF(para, rng_spec=rs)
     elif name == 'SVD':
-        algo = funksvd.FunkSVD(para)
+        algo = funksvd.FunkSVD(para, random_state=rs)
     elif name == 'Pop':
         algo = basic.Popular()
     elif name == 'BPR':
-        algo = tf.BPR(para)
+        algo = tf.BPR(para, rng_spec=rs)
     elif name == 'HPF':
-        algo = hpf.HPF(para)
+        algo = hpf.HPF(para, kwargs={'random_seed': rs})
     return algo
