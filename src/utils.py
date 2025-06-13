@@ -103,7 +103,12 @@ def read_dataset(name, frac=None):
         path = base_path / "food.com/RAW_interactions.csv"
         data = pd.read_csv(path, names=['user', 'item', 'timestamp', 'rating', 'review'], header=0)
         start, end = 2000, 2019
-
+    
+    elif name == 'beer-advocate':
+        path = base_path / "beeradvocate.csv"
+        data = pd.read_csv(path)
+        start, end = 1998, 2011
+        
     else:
         raise ValueError('Dataset not implemented')
 
