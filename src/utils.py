@@ -112,8 +112,11 @@ def read_dataset(name, frac=None):
     else:
         raise ValueError('Dataset not implemented')
 
+    if name == 'food-com':
+        data['rating'] = data['rating'] + 1
+
     if name == 'amazon-software' or name == 'amazon-video-games':
-        # For amazon-software, we need to handle the timestamps differently as they are in milliseconds
+        # For amazon-software and video-games, we need to handle the timestamps differently as they are in milliseconds
         data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms', origin='unix', errors='coerce')
     elif name == 'food-com':
         data['timestamp'] = pd.to_datetime(data['timestamp'])
