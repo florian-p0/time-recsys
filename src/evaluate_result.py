@@ -1,7 +1,23 @@
 import pandas as pd
 
-def evaluate(path :str, num_algos = 7): # returns number of times the best algorithm has switched in a given result
-    df = pd.read_csv(path)
+def evaluate(*paths, num_algos = 7): # returns number of times the best algorithm has switched in a given result
+    df = None
+    algos = None
+    for i, path in enumerate(paths):
+        if i==0:
+            df = pd.read_csv(path)
+            continue
+        df = pd.concat([df, pd.read_csv(path)])
+    
+    df.columns = ['algorithm', 'ndcg', 'recall', 'precision', 'nrecs']
+    algos = df['algorithm']
+    df = df[['ndcg', 'recall', 'precision', 'nrecs']].groupby(df.index)
+    df = df.mean()
+    algos = algos.tail(len(df))
+    df['algorithm'] = algos
+    print(df)
+    return
+
     df.columns = ['algorithm', 'ndcg', 'recall', 'precision', 'nrecs']
     data_dict = {}
     num_epochs = 0
@@ -27,4 +43,6 @@ def evaluate(path :str, num_algos = 7): # returns number of times the best algor
             
 
 
-print(evaluate(r"C:\Users\flerp\repos\time-recsys\Results\beer-advocate0_result_10.csv"))
+print(evaluate(r"/home/florian/repos/time-recsys/Results/beer-advocate0_result_10.csv",
+            r"/home/florian/repos/time-recsys/Results/beer-advocate1_result_10.csv",
+            r"/home/florian/repos/time-recsys/Results/beer-advocate2_result_10.csv"))
