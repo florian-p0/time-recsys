@@ -15,10 +15,6 @@ def evaluate(*paths, num_algos = 7): # returns number of times the best algorith
     df = df.mean()
     algos = algos.tail(len(df))
     df['algorithm'] = algos
-    print(df)
-    return
-
-    df.columns = ['algorithm', 'ndcg', 'recall', 'precision', 'nrecs']
     data_dict = {}
     num_epochs = 0
     while len(df) > 0:
