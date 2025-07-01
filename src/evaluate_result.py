@@ -1,6 +1,7 @@
 import pandas as pd
+import glob, os
 
-def evaluate(*paths, num_algos = 7): # returns number of times the best algorithm has switched in a given result
+def evaluate_files(*paths, num_algos = 7): # returns number of times the best algorithm has switched in a given result
     df = None
     algos = None
     for i, path in enumerate(paths):
@@ -26,6 +27,7 @@ def evaluate(*paths, num_algos = 7): # returns number of times the best algorith
         num_epochs+=1
     best_algo = ""
     swaps = 0
+    last_swap = None
     for i in range(num_epochs):
         if i == 0:
             best_algo = data_dict[i]["algorithm"].iloc[0]
@@ -34,11 +36,29 @@ def evaluate(*paths, num_algos = 7): # returns number of times the best algorith
         if best_algo != new_best_algo:
             best_algo = new_best_algo
             swaps += 1
-    return swaps
+            last_swap = i
+    return swaps, num_epochs, last_swap
 
             
+def evaluate_folder(path):
+    os.chdir(path)
+    return(evaluate_files(*glob.glob("*.csv")))
 
+#print(evaluate_folder(r"C:\Users\flerp\repos\time-recsys\Results\Amazon Video Games"))
 
-print(evaluate(r"/home/florian/repos/time-recsys/Results/beer-advocate0_result_10.csv",
-            r"/home/florian/repos/time-recsys/Results/beer-advocate1_result_10.csv",
-            r"/home/florian/repos/time-recsys/Results/beer-advocate2_result_10.csv"))
+prefix = r"C:\Users\flerp\repos\time-recsys\Results"
+folders = [     r"Amazon Electronics",
+                r"Amazon Instant Video",
+                r"Amazon Software",
+                r"Amazon Video Games",
+                r"Beer Advocate",
+                r"Food Com",
+                r"ML-1M",
+                r"ML-100k"          ]
+
+for folder in folders:
+    path = prefix + "\\" + folder
+
+    print(folder)
+    numbers = evaluate_folder(path)
+    print("swaps: {}, last swap of {} epochs: {}".format(numbers[0],numbers[1],numbers[2],))
