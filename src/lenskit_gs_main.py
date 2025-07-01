@@ -106,7 +106,7 @@ def main(dataset, frac=None, rs=42):
         g = data.groupby(pd.Grouper(key='timestamp', freq='M'))
     elif dataset == 'amazon-video-games' or dataset == 'amazon-software':
         g = data.groupby(pd.Grouper(key='timestamp', freq='5Y'))
-    elif dataset == 'food-com':
+    elif dataset == 'food-com' or dataset == 'MovieTweetings':
         g = data.groupby(pd.Grouper(key='timestamp', freq='3Y'))
     else: 
         g = data.groupby(pd.Grouper(key='timestamp', freq='Y'))
