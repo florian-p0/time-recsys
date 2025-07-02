@@ -108,11 +108,17 @@ def read_dataset(name, frac=None):
         path = base_path / "beeradvocate.csv"
         data = pd.read_csv(path)
         start, end = 1998, 2011
+
+    elif name == 'MovieTweetings':
+        path = base_path / "MovieTweetings/ratings.dat"
+        data = pd.read_csv(path, sep='::', engine='python', names=['user', 'item', 'rating', 'timestamp'], header=None)
+        start, end = 2013, 2022
         
     else:
         raise ValueError('Dataset not implemented')
 
-    if name == 'food-com':
+    # Ensure no 0 ratings as HPF does not support them
+    if name == 'food-com' or name == 'MovieTweetings':
         data['rating'] = data['rating'] + 1
 
     if name == 'amazon-software' or name == 'amazon-video-games':
