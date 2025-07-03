@@ -6,28 +6,6 @@ import matplotlib as mpl
 
 def heatmap(data, row_labels, col_labels, ax=None,
             cbar_kw=None, cbarlabel="", **kwargs):
-    """
-    Create a heatmap from a numpy array and two lists of labels.
-
-    Parameters
-    ----------
-    data
-        A 2D numpy array of shape (M, N).
-    row_labels
-        A list or array of length M with the labels for the rows.
-    col_labels
-        A list or array of length N with the labels for the columns.
-    ax
-        A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
-        not provided, use current Axes or create a new one.  Optional.
-    cbar_kw
-        A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
-    cbarlabel
-        The label for the colorbar.  Optional.
-    **kwargs
-        All other arguments are forwarded to `imshow`.
-    """
-
     if ax is None:
         ax = plt.gca()
 
@@ -36,7 +14,7 @@ def heatmap(data, row_labels, col_labels, ax=None,
 
     # Plot the heatmap
     im = ax.imshow(data, **kwargs)
-
+    ax.set_title("best ranking algorithm (NDCG)")
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
     cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
@@ -75,12 +53,13 @@ folders = [     r"Amazon Electronics",
                 r"Beer Advocate",
                 r"Food Com",
                 r"ML-1M",
-                r"ML-100k"          ]
+                r"ML-100k",
+                r"MovieTweetings"          ]
 
 results = evaluate_result.evaluate_folders(prefix, folders)
 
-n_datasets = 8
-n_epochs = 14
+n_datasets = len(folders)
+n_epochs = 15
 data = np.random.randn(n_datasets, n_epochs)
 for i in range(n_datasets):
     for j in range(n_epochs):
@@ -100,8 +79,9 @@ y = [     r"Amazon Electronics",
                 r"Beer Advocate",
                 r"Food Com",
                 r"ML-1M",
-                r"ML-100k"          ]
-x = [f"Epoch {i}" for i in range(1, 15)]
+                r"ML-100k",
+                r"MovieTweetings"          ]
+x = [f"Set {i}" for i in range(1, n_epochs+1)]
 
 qrates = list(algo_encode.keys())
 norm = matplotlib.colors.BoundaryNorm(np.linspace(-0.5, 6.5, 8), 7)
